@@ -113,7 +113,7 @@ public class Airplane implements Comparable {
     @Override
     public int hashCode() {
         return Objects.hash(name, fuelCapacity, seats);
-    }ñkjlkj
+    }
 
 
 
