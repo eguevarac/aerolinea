@@ -2,8 +2,9 @@ package aerolinea;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Objects;
 
-public class Airplane {
+public class Airplane implements Comparable {
 
     private String name;
     private int fuelCapacity;
@@ -99,5 +100,39 @@ public class Airplane {
         } while (asignedAirplane == null);
 
         return asignedAirplane;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Airplane airplane = (Airplane) o;
+        return fuelCapacity == airplane.fuelCapacity && seats == airplane.seats && name.equals(airplane.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, fuelCapacity, seats);
+    }
+
+
+    @Override
+    public int compareTo(Object o) {
+        if ( o instanceof Airplane){
+            int value = this.seats - ((Airplane)o).seats;
+
+            if (value == 0){
+                value = this.fuelCapacity - ((Airplane)o).fuelCapacity;
+
+                if (value == 0){
+                    return this.name.compareTo(((Airplane)o).name);
+                }
+            }
+        }else{
+
+            throw new ClassCastException();
+        }
+
+
     }
 }
