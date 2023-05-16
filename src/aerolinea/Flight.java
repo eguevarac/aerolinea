@@ -170,9 +170,9 @@ public class Flight {
      * @return el vuelo con el código solicitado o null si no existe
      */
     public static Flight lookingForAFlight(ArrayList<Flight> flights, String code) {
+
         Flight flight = new Flight(code);
         int position;
-       // List<Flight> flightList = flights;
 
 
         if(flights.contains(flight)){

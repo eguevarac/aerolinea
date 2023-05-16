@@ -3,6 +3,7 @@ package aerolinea;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class Pilot {
@@ -121,5 +122,17 @@ public class Pilot {
         return asignedPilot;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pilot pilot = (Pilot) o;
+        return IDCard.equals(pilot.IDCard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(IDCard);
+    }
 }
 

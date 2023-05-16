@@ -116,23 +116,33 @@ public class Airplane implements Comparable {
     }
 
 
+
     @Override
     public int compareTo(Object o) {
+
+        //Cambio el orden de la comparación para que me lo establezca en el orden deseado (Objeto - this en lugar de this - Objeto):
+        //major capacitat de places > major capacitat de combustible > Nom de l’avió en ordre alfabètic (A->Z)
+        //sin tener que hacer un comparator
         if ( o instanceof Airplane){
-            int value = this.seats - ((Airplane)o).seats;
+
+            int value = ((Airplane)o).seats - this.seats;
 
             if (value == 0){
-                value = this.fuelCapacity - ((Airplane)o).fuelCapacity;
+
+                value = ((Airplane)o).fuelCapacity - this.fuelCapacity;
 
                 if (value == 0){
+
                     return this.name.compareTo(((Airplane)o).name);
-                }
-            }
+
+                }else {return value;}
+
+            } else {return value;}
+
         }else{
 
             throw new ClassCastException();
         }
-
 
     }
 }

@@ -1,10 +1,11 @@
 package aerolinea;
 
+import com.sun.corba.se.spi.ior.ObjectKey;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Programa de aerolínea
@@ -19,6 +20,7 @@ public class Main {
         ArrayList<Client> clients = new ArrayList<>();
         ArrayList<Flight> flights = new ArrayList<>();
         Admin adminInUse;
+        Map<String, Pilot> map = new HashMap<>();
 
 
         admins = arrayAdminsCreation();
@@ -40,7 +42,7 @@ public class Main {
 
                         Text.adminGreetings(adminInUse.getName());
 
-                        adminMenu(airplanes, pilots, flights);
+                        adminMenu(airplanes, pilots, flights, map);
 
                     } else {
                         Text.wrongPasswd();
@@ -351,7 +353,7 @@ public class Main {
      * @param flights   el ArrayList de vuelos
      */
 
-    private static void adminMenu(ArrayList<Airplane> airplanes, ArrayList<Pilot> pilots, ArrayList<Flight> flights) {
+    private static void adminMenu(ArrayList<Airplane> airplanes, ArrayList<Pilot> pilots, ArrayList<Flight> flights, Map<String,Pilot> map) {
         boolean closeMenu = false;
         int adminChoice;
         String code;
@@ -364,7 +366,7 @@ public class Main {
 
             switch (adminChoice) {
                 case 1:
-                    flightCreation(flights, pilots, airplanes);
+                    flightCreation(flights, pilots, airplanes, map);
                     break;
                 case 2:
                     Flight.showFlightCodes(flights);
@@ -517,12 +519,13 @@ public class Main {
      * @param pilots    la lista de pilotos para asignar al vuelo
      * @param airplanes la lista de aviones para asignar al vuelo
      */
-    private static void flightCreation(ArrayList<Flight> flights, ArrayList<Pilot> pilots, ArrayList<Airplane> airplanes) {
+    private static void flightCreation(ArrayList<Flight> flights, ArrayList<Pilot> pilots, ArrayList<Airplane> airplanes, Map<String,Pilot> map) {
         String code, provenance, destination;
         LocalDateTime departure;
         LocalTime flightDuration;
         Pilot pilot;
         Airplane airplane;
+        boolean tryNewPilot;
         float devolution, price;
 
         code = SpellBook.insertString("Introduzca código de vuelo:");
@@ -538,14 +541,50 @@ public class Main {
 
         devolution = checkingIfCorrectPercent(devolution);
 
-        pilot = Pilot.lookingForAPilot(pilots);
-
         airplane = Airplane.lookingForAPlane(airplanes);
+
+        do {
+            pilot = Pilot.lookingForAPilot(pilots);
+
+            tryNewPilot = checkingPilotAtMap(map, code, pilot);
+
+        } while (tryNewPilot);
+
 
         flights.add(new Flight(code, provenance, destination, departure, flightDuration, pilot, airplane, devolution, price));
 
         Text.flightCreationSuccesfull();
 
+    }
+
+    private static boolean checkingPilotAtMap(Map<String,Pilot> map,String code, Pilot pilot) {
+        boolean pilotASignedYet;
+
+
+        if (map.containsValue(pilot)){
+
+            Set<String> keys = map.keySet();
+
+            for ( String key : keys ) {
+
+                if (map.get(key).equals(pilot)){
+
+                    System.out.println("El piloto ya ha sido asignado al vuelo con código "+key+".");
+                }
+            }
+
+            System.out.println("Por favor, vuelva a intentarlo.");
+
+            pilotASignedYet=true;
+
+
+        }else {
+
+            map.put(code,pilot);
+            pilotASignedYet = false;
+        }
+
+    return pilotASignedYet;
     }
 
     /**
@@ -629,9 +668,21 @@ public class Main {
 
         ArrayList<Airplane> airplanes = new ArrayList<>();
 
+
         airplanes.add(new Airplane("Boeing 747-8", 228980, 467, LocalDate.of(2021, 11, 14)));
-        airplanes.add(new Airplane("Airbus A380", 297000, 853, LocalDate.of(2020, 10, 25)));
         airplanes.add(new Airplane("Eclipse 500", 1023, 5, LocalDate.of(2008, 12, 12)));
+        airplanes.add(new Airplane("Airbus A380", 297000, 853, LocalDate.of(2020, 10, 25)));
+        airplanes.add(new Airplane("Boeing 747-8", 228981, 467, LocalDate.of(2021, 11, 14)));
+        airplanes.add(new Airplane("Boeing 747-8", 228981, 467, LocalDate.of(2021, 11, 14)));
+        airplanes.add(new Airplane("Coeing 747-8", 228981, 467, LocalDate.of(2021, 11, 14)));
+
+
+        Collections.sort(airplanes);
+
+
+        //el siguiente método invierte la lista (no me vale con compareTo por el orden alfabético)
+        //Collections.reverse(airplanes);
+
 
         return airplanes;
 
@@ -648,7 +699,7 @@ public class Main {
 
         pilots.add(new Pilot("Sukio", "Seki", "45216782J", LocalDate.of(1982, 10, 23), 654879654, "kami1"));
         pilots.add(new Pilot("Motoharu", "Okamura", "54678798Y", LocalDate.of(1991, 2, 12), 699979654, "kami2"));
-        pilots.add(new Pilot("Takijiro", "Onishi", "45216782J", LocalDate.of(1971, 1, 30), 654879654, "kami0"));
+        pilots.add(new Pilot("Takijiro", "Onishi", "89475632J", LocalDate.of(1971, 1, 30), 654879654, "kami0"));
 
 
         return pilots;
@@ -666,6 +717,8 @@ public class Main {
         admins.add(new Admin("Jack", "Rackham"));
         admins.add(new Admin("John", "Silver"));
         admins.add(new Admin("Charles", "Vane"));
+
+
 
         return admins;
 
